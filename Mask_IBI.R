@@ -12,6 +12,7 @@ library(carets)
 library(rgdal)
 library(raster)
 library(rasterVis)
+library(viridis)
 
 setwd("C:/Users/s1526/Dropbox/MB3_Scripts/MB3_UrbanClass")
 
@@ -36,7 +37,6 @@ b2_BLUE <- raster(list.files()[2])
 
 #Create RGB stack
 Wü_RGB <- stack(b4_RED, b3_GREEN, b2_BLUE)
-plot(Wü_RGB)
 ggRGB(Wü_RGB, r=1, g=2, b=3, stretch="hist")
 
 #IBI----
@@ -51,4 +51,13 @@ plot(Wü_IBI)
 
 #Mask ROI of IBI
 setwd("C:/Users/s1526/Dropbox/MB3_Scripts")
-Mask_Wü_IBI <- mask(Wü_IBI, Würzburg_ROI, "Wü_ROI_IBI.tif", overwrite=TRUE)
+Mask_Wü_IBI <- mask(Wü_IBI, Würzburg_ROI)
+Mask_Wü_RGB <- mask(Wü_RGB, Würzburg_ROI)
+ggR(Mask_Wü_IBI)
+ggRGB(Mask_Wü_RGB, r=1, g=2, b=3, stretch="hist")
+writeRaster(Mask_Wü_RGB, "Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_IBI, "Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+
+#Condition if > 0.013 = Built-up
+Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, 0.013, NA))
+writeRaster(Builtup_ROI_IBI, "Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
