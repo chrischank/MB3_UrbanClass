@@ -46,7 +46,7 @@ IBI <- function(MIR, NIR, GREEN, RED){
   return(ibi)
 }
 
-Wü_IBI <- IBI(b11_MIR, b8_NIR, b3_GREEN, b2_BLUE)
+Wü_IBI <- IBI(b11_MIR, b8_NIR, b3_GREEN, b4_RED)
 plot(Wü_IBI)
 
 #Mask ROI of IBI
@@ -55,9 +55,9 @@ Mask_Wü_IBI <- crop(Wü_IBI, Würzburg_ROI)
 Mask_Wü_RGB <- crop(Wü_RGB, Würzburg_ROI)
 ggR(Mask_Wü_IBI)
 ggRGB(Mask_Wü_RGB, r=1, g=2, b=3, stretch="hist")
-writeRaster(Mask_Wü_RGB, "Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
-writeRaster(Mask_Wü_IBI, "Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_RGB, "Data/Masked_IBI/Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_IBI, "Data/Masked_IBI/Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
 
 #Condition if > 0.013 = Built-up
 Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, 0.013, NA))
-writeRaster(Builtup_ROI_IBI, "Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Builtup_ROI_IBI, "Data/Masked_IBI/Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
