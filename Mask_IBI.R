@@ -59,5 +59,5 @@ writeRaster(Mask_Wü_RGB, "Data/Masked_IBI/Wü_ROI_RGB.tif", format="GTiff", ove
 writeRaster(Mask_Wü_IBI, "Data/Masked_IBI/Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
 
 #Condition if > 0.013 = Built-up
-Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, 0.013, NA))
+Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, -0.1, NA))
 writeRaster(Builtup_ROI_IBI, "Data/Masked_IBI/Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
