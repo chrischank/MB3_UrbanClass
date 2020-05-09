@@ -14,7 +14,8 @@ library(raster)
 library(rasterVis)
 library(viridis)
 
-setwd("C:/Users/s1526/Dropbox/MB3_Scripts/MB3_UrbanClass")
+setwd("C:/Users/s1526/Dropbox/MB3_Scripts")
+dir.create("C:/Users/s1526/Dropbox/MB3_Scripts/indices")
 
 Data_path <- "C:/Users/s1526/Dropbox/MB3_Scripts/Data"
 list.files(Data_path)
@@ -36,6 +37,8 @@ b2_BLUE <- raster(list.files()[2])
 #Create RGB stack
 Wü_RGB <- stack(b4_RED, b3_GREEN, b2_BLUE)
 ggRGB(Wü_RGB, r=1, g=2, b=3, stretch="hist")
+writeRaster(Wü_RGB, "Data/Wü_RGB.tif", format="GTiff", overwrite=TRUE)
+
 
 #################
 #INDEX FUNCTIONS#
@@ -80,7 +83,7 @@ Wü_NDWI <- NDWI(b3_GREEN, b8_NIR)
 plot(Wü_NDWI)
 
 #Mask ROI of IBI
-setwd("C:/Users/s1526/Dropbox/MB3_Scripts")
+setwd("C:/Users/s1526/Dropbox/MB3_Scripts/Indices")
 Mask_Wü_IBI <- mask(Wü_IBI, Würzburg_ROI)
 Mask_Wü_RGB <- mask(Wü_RGB, Würzburg_ROI)
 Mask_Wü_NDVI <- mask(Wü_NDVI, Würzburg_ROI)
@@ -89,11 +92,14 @@ ggR(Mask_Wü_IBI)
 ggR(Mask_Wü_NDVI)
 ggR(Mask_Wü_NDWI)
 ggRGB(Mask_Wü_RGB, r=1, g=2, b=3, stretch="hist")
-writeRaster(Mask_Wü_RGB, "Data/Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
-writeRaster(Mask_Wü_IBI, "Data/Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
-writeRaster(Mask_Wü_NDVI, "Data/Wü_ROI_NDVI.tif", format="GTiff", overwrite=TRUE)
-writeRaster(Mask_Wü_NDWI, "Data/Wü_ROI_NDWI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_IBI, "Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_NDVI, "Wü_ROI_NDVI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_NDWI, "Wü_ROI_NDWI.tif", format="GTiff", overwrite=TRUE)
 
 #Condition if > 0.013 = Built-up
 #Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, -0.1, NA))
 #writeRaster(Builtup_ROI_IBI, "Data/Masked_IBI/Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+
+stack_ROI_indices <- stack(Mask_Wü_IBI, Mask_Wü_NDVI, Mask_Wü_NDWI)
+writeRaster(stack_ROI_indices, "stack_ROI_indices.tif", format="GTiff", overwrite=TRUE)
+
