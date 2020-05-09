@@ -1,8 +1,8 @@
-######################
-#IBI Masking Würzburg#
-#      04/05/2020    #
-#Author: Chris Chan  #
-######################
+#########################
+#Index Creation Würzburg#
+#       04/05/2020      #
+#Author: Chris Chan     #
+#########################
 
 library(RStoolbox)
 library(tidyverse)
@@ -15,8 +15,6 @@ library(rasterVis)
 library(viridis)
 
 setwd("C:/Users/s1526/Dropbox/MB3_Scripts/MB3_UrbanClass")
-
-dir.create("C:/Users/s1526/Dropbox/MB3_Scripts/Data/Masked_IBI", showWarnings = TRUE)
 
 Data_path <- "C:/Users/s1526/Dropbox/MB3_Scripts/Data"
 list.files(Data_path)
@@ -39,25 +37,63 @@ b2_BLUE <- raster(list.files()[2])
 Wü_RGB <- stack(b4_RED, b3_GREEN, b2_BLUE)
 ggRGB(Wü_RGB, r=1, g=2, b=3, stretch="hist")
 
+#################
+#INDEX FUNCTIONS#
+#################
+#One for vegetation, one for built-up, one for water
+
 #IBI----
+#band 
+
 IBI <- function(MIR, NIR, GREEN, RED){
   ibi <- ((2*MIR)/(MIR+NIR)-(NIR/(NIR+RED)+GREEN/(GREEN+MIR)))/
     ((2*MIR/(MIR+NIR))+(NIR/(NIR+RED)+GREEN/(GREEN+MIR)))
   return(ibi)
 }
 
-Wü_IBI <- IBI(b11_MIR, b8_NIR, b3_GREEN, b4_RED)
+#NDVI----
+#band 8, band 4
+
+NDVI <- function(NIR, RED){
+  ndvi <- (NIR-RED)/
+    (NIR+RED)
+  return(ndvi)
+}
+
+#NDWI----
+NDWI <- function(GREEN, NIR){
+  ndwi <- (GREEN-NIR)/
+    (GREEN+NIR)
+  return(ndwi)
+}
+
+#Disaggregate b11 from 20m res to 10m fact=2 res for calculation
+DissAgg.b11_MIR <- disaggregate(b11_MIR, fact=2)
+
+Wü_IBI <- IBI(DissAgg.b11_MIR, b8_NIR, b3_GREEN, b4_RED)
 plot(Wü_IBI)
+
+Wü_NDVI <- NDVI(b8_NIR, b4_RED)
+plot(Wü_NDVI)
+
+Wü_NDWI <- NDWI(b3_GREEN, b8_NIR)
+plot(Wü_NDWI)
 
 #Mask ROI of IBI
 setwd("C:/Users/s1526/Dropbox/MB3_Scripts")
-Mask_Wü_IBI <- crop(Wü_IBI, Würzburg_ROI)
-Mask_Wü_RGB <- crop(Wü_RGB, Würzburg_ROI)
+Mask_Wü_IBI <- mask(Wü_IBI, Würzburg_ROI)
+Mask_Wü_RGB <- mask(Wü_RGB, Würzburg_ROI)
+Mask_Wü_NDVI <- mask(Wü_NDVI, Würzburg_ROI)
+Mask_Wü_NDWI <- mask(Wü_NDWI, Würzburg_ROI)
 ggR(Mask_Wü_IBI)
+ggR(Mask_Wü_NDVI)
+ggR(Mask_Wü_NDWI)
 ggRGB(Mask_Wü_RGB, r=1, g=2, b=3, stretch="hist")
-writeRaster(Mask_Wü_RGB, "Data/Masked_IBI/Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
-writeRaster(Mask_Wü_IBI, "Data/Masked_IBI/Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_RGB, "Data/Wü_ROI_RGB.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_IBI, "Data/Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_NDVI, "Data/Wü_ROI_NDVI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_NDWI, "Data/Wü_ROI_NDWI.tif", format="GTiff", overwrite=TRUE)
 
 #Condition if > 0.013 = Built-up
-Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, -0.1, NA))
-writeRaster(Builtup_ROI_IBI, "Data/Masked_IBI/Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
+#Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, -0.1, NA))
+#writeRaster(Builtup_ROI_IBI, "Data/Masked_IBI/Builtup_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
