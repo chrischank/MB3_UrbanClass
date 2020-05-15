@@ -32,10 +32,10 @@ setwd(Data_path)
 list.files()
 
 b11_MIR <- raster(list.files()[1])
-b8_NIR <- raster(list.files()[5])
-b4_RED <- raster(list.files()[4])
-b3_GREEN <- raster(list.files()[3])
-b2_BLUE <- raster(list.files()[2])
+b8_NIR <- raster(list.files()[6])
+b4_RED <- raster(list.files()[5])
+b3_GREEN <- raster(list.files()[4])
+b2_BLUE <- raster(list.files()[3])
 
 #Create RGB stack
 Wü_RGB <- stack(b4_RED, b3_GREEN, b2_BLUE)
