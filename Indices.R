@@ -99,6 +99,7 @@ ggRGB(Mask_Wü_RGB, r=1, g=2, b=3, stretch="hist")
 writeRaster(Mask_Wü_IBI, "Wü_ROI_IBI.tif", format="GTiff", overwrite=TRUE)
 writeRaster(Mask_Wü_NDVI, "Wü_ROI_NDVI.tif", format="GTiff", overwrite=TRUE)
 writeRaster(Mask_Wü_NDWI, "Wü_ROI_NDWI.tif", format="GTiff", overwrite=TRUE)
+writeRaster(Mask_Wü_RGB, "Wü_ROI_RGB.tif", format="GTiff", overrwrite=TRUE)
 
 #Condition if > 0.013 = Built-up
 #Builtup_ROI_IBI <- reclassify(Mask_Wü_IBI, cbind(-Inf, -0.1, NA))
