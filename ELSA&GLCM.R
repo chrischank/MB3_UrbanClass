@@ -16,7 +16,7 @@ library(elsa)
 
 setwd("C:/Users/s1526/Dropbox/MB3_Scripts/indices/Kmeans")
 
-kmeans <- raster(list.files()[10])
+kmeans <- raster(list.files()[11])
 
 plot(kmeans)
 
@@ -41,3 +41,5 @@ writeRaster(kmeans_glcm, "Kmeans_GLCM.tif", "GTiff", overwrite=TRUE, bylayer = T
 kmeans_elsa <- elsa(kmeans)
 
 plot(kmeans_elsa)
+
+
